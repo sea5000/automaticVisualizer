@@ -1,15 +1,16 @@
 # automaticVisualizer
 
-Back in high school I had an Automatic Pro installed in my 2017 Ford Explorer.
-It just quietly logged every trip I ever made — where I went, how hard I
+Back in high school I had an Automatic Pro installed in my 2000 Ford Explorer
+— the family car my dad handed down, the one my family had been in as long
+as I can remember. It just quietly logged every trip I ever made — where I went, how hard I
 braked, how many minutes I spent over 80 — and pushed each export up to a Google
 Drive folder. I forgot about it.
 
 Years later, after I'd picked up Python and the rest of the data-processing
 toolkit, I found that folder again. About eighteen months of *me*, in
-spreadsheets: how I actually drove, where I actually spent my time, reduced to
-numbers I could finally read back. So I built a dashboard for it — for a
-part of my life.
+spreadsheets. I'd installed it for fuel consumption and total miles — but
+the thing that kept me reading was the other half: where I'd actually gone,
+and how often I'd kept going there. So I built a dashboard for that.
 
 What you're looking at is that dashboard, running on **synthetic sample
 data**. The real trips stay in that Drive folder; this repo ships a seeded,

@@ -97,8 +97,12 @@
     if (showRoutes) {
       filtered.forEach((t) => {
         if (!t.route || t.route.length < 2) return;
-        L.polyline(t.route.map((p) => [p[1], p[0]]), {
-          color: mpgColor(t.mpg, lo, hi), weight: 3, opacity: 0.85,
+        const pts = t.route.map((p) => [p[1], p[0]]);
+        // Casing under the colored line: without it, a 3px route is
+        // invisible on the inverted dark tiles at map-fit zoom.
+        L.polyline(pts, { color: "#d8dde3", weight: 6, opacity: 0.55 }).addTo(routeLayer);
+        L.polyline(pts, {
+          color: mpgColor(t.mpg, lo, hi), weight: 3, opacity: 0.95,
         }).addTo(routeLayer)
           .bindTooltip(t.dest_label, { className: "sel-tip", direction: "top", sticky: true })
           .on("click", () => selectTrip(tripId(t), false));
