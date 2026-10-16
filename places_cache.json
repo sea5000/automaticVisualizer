@@ -1,0 +1,42 @@
+{
+ "39.12104,-105.64633": {
+  "label": "Maple & 9th \u00b7 Ashbrook",
+  "category": "Home / Residential"
+ },
+ "39.12890,-105.63845": {
+  "label": "Summit Market",
+  "category": "Grocery / Retail"
+ },
+ "39.11872,-105.63012": {
+  "label": "The Copper Kettle",
+  "category": "Restaurant / Caf\u00e9"
+ },
+ "39.11455,-105.66218": {
+  "label": "Ashbrook Community Center",
+  "category": "Community / Civic"
+ },
+ "39.13620,-105.65890": {
+  "label": "Pinecrest Elementary",
+  "category": "Education / School"
+ },
+ "39.10895,-105.64720": {
+  "label": "Larkspur Park",
+  "category": "Park / Recreation"
+ },
+ "39.12680,-105.66740": {
+  "label": "Highline Clinic",
+  "category": "Healthcare"
+ },
+ "39.13210,-105.63480": {
+  "label": "Copper Ridge Bank",
+  "category": "Banking / Financial"
+ },
+ "39.10240,-105.65110": {
+  "label": "Route 9 Fuel",
+  "category": "Fuel / Transportation"
+ },
+ "39.14010,-105.62870": {
+  "label": "Ashbrook Trailhead",
+  "category": "Outdoor / Recreation"
+ }
+}

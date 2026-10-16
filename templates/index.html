@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Automatic Pro Trips — Dashboard</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+<header>
+  <h1>Automatic <span>Pro Trips</span> — Fleet Dashboard</h1>
+  <p class="sub" id="sub">Loading trips&hellip;</p>
+</header>
+
+<div class="controls">
+  <label>From
+    <input type="date" id="fromDate" />
+  </label>
+  <label>To
+    <input type="date" id="toDate" />
+  </label>
+  <label>Destination category
+    <select id="categorySel"><option value="">All categories</option></select>
+  </label>
+  <label>Search destination
+    <input type="text" id="searchBox" placeholder="e.g. market, park&hellip;" />
+  </label>
+  <span class="seg" id="mapModeSeg">
+    <button class="active" data-mode="routes">Routes + markers</button>
+    <button data-mode="markers">Markers only</button>
+  </span>
+  <button class="btn" id="resetBtn">Reset filters</button>
+</div>
+
+<div class="kpis" id="kpis">
+  <div class="kpi"><div class="k-label">Trips</div><div class="k-value" id="kTrips">–</div><div class="k-sub" id="kTripsSub"></div></div>
+  <div class="kpi"><div class="k-label">Distance</div><div class="k-value" id="kDist">–</div><div class="k-sub" id="kDistSub"></div></div>
+  <div class="kpi"><div class="k-label">Avg MPG</div><div class="k-value" id="kMpg">–</div><div class="k-sub" id="kMpgSub"></div></div>
+  <div class="kpi"><div class="k-label">Fuel used</div><div class="k-value" id="kFuel">–</div><div class="k-sub" id="kFuelSub"></div></div>
+  <div class="kpi"><div class="k-label">Fuel cost</div><div class="k-value" id="kCost">–</div><div class="k-sub" id="kCostSub"></div></div>
+  <div class="kpi"><div class="k-label">Hard events</div><div class="k-value" id="kHard">–</div><div class="k-sub" id="kHardSub"></div></div>
+</div>
+
+<section class="grid grid-map">
+  <div class="card">
+    <h2>Map — trip routes &amp; destinations</h2>
+    <div class="body" style="padding:0">
+      <div id="map"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Trip detail</h2>
+    <div class="body" id="detailPanel">
+      <div class="empty">Select a marker or a row in the trips table to inspect a trip.</div>
+    </div>
+  </div>
+</section>
+
+<section class="chart-grid">
+  <div class="card">
+    <h2>Destinations by category</h2>
+    <div class="body"><canvas id="chartCategory"></canvas></div>
+  </div>
+  <div class="card">
+    <h2>Monthly activity</h2>
+    <div class="body"><canvas id="chartMonthly"></canvas></div>
+  </div>
+  <div class="card">
+    <h2>MPG distribution</h2>
+    <div class="body"><canvas id="chartMpg"></canvas></div>
+  </div>
+  <div class="card card-tall">
+    <h2>Legend</h2>
+    <div class="legend-box">
+      <div>Route line color = fuel economy of the trip:</div>
+      <div class="mpg-gradient"></div>
+      <div class="mpg-scale"><span id="mpgMin"></span><span id="mpgMid"></span><span id="mpgMax"></span></div>
+      <div style="margin-top:12px">Cluster marker + bars = month of the trip:</div>
+      <div class="legend-month" id="legendMonth"></div>
+    </div>
+  </div>
+</section>
+
+<section class="grid">
+  <div class="card">
+    <h2>Trips</h2>
+    <div class="table-wrap">
+      <table id="tripsTable">
+        <thead>
+          <tr>
+            <th data-key="ts">Date &amp; time</th>
+            <th data-key="dur_min">Duration</th>
+            <th data-key="dist">Miles</th>
+            <th data-key="mpg">MPG</th>
+            <th data-key="cost">Cost</th>
+            <th data-key="hard_acc">Hard acc.</th>
+            <th data-key="hard_brakes">Hard brake</th>
+            <th data-key="over_70">70&deg;+ … 80&deg;+*</th>
+            <th data-key="dest_label">Destination</th>
+          </tr>
+        </thead>
+        <tbody id="tripsBody"></tbody>
+      </table>
+    </div>
+    <div class="table-note" id="tableNote">* 70+/75+/80+ = minutes driven above each speed, as reported by the trip logger.</div>
+  </div>
+</section>
+
+<footer>
+  Automatic Pro Trips dashboard &mdash; synthetic sample data for demonstration.
+  Built Flask + Leaflet + Chart.js. Routes decoded server-side from the exporter&rsquo;s encoded polylines.
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>window.TRIP_COUNT = {{ trip_count }};</script>
+<script src="/static/app.js"></script>
+</body>
+</html>

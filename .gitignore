@@ -1,0 +1,14 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Local secrets — never committed
+.env
+
+# Raw geocoder response cache (regenerable via geocode.py)
+.geo_cache/
+
+# Editor/OS detritus
+*.save
+.DS_Store
