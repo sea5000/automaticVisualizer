@@ -120,7 +120,7 @@
     if (withLoc.length) {
       const pts = withLoc.map((t) => [t.end_lat, t.end_lng]);
       const b = L.featureGroup(pts.map((p) => L.marker(p))).getBounds().pad(0.25);
-      map.fitBounds(b, { maxZoom: 17 });
+      map.fitBounds(b);
     }
   }
 

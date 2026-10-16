@@ -1,61 +1,54 @@
 # automaticVisualizer
 
-Automatic Pro is the GPS tracker in a 2017 Ford Explorer: it logs every trip, with a
-hard-coded idea of what a "trip" is, and exports the results as a `.xlsx` you have to
-pull down from the app. The dashboard here is what I keep opening after pulling an
-export — the whole fleet history on one page, so you can answer "how does this car
-actually drive" without scrolling spreadsheets.
+Back in high school I had an Automatic Pro installed in my 2017 Ford Explorer.
+It just quietly logged every trip I ever made — where I went, how hard I
+braked, how many minutes I spent over 80 — and pushed each export up to a Google
+Drive folder. I forgot about it.
 
-Two things surprised me when I looked: the file has no header row, and the route for
-each trip is buried inside a Google Maps URL as an encoded polyline. This repo is
-mostly the code that pulls those out and turns back.
+Years later, after I'd picked up Python and the rest of the data-processing
+toolkit, I found that folder again. About eighteen months of *me*, in
+spreadsheets: how I actually drove, where I actually spent my time, reduced to
+numbers I could finally read back. So I built a dashboard for it — for a
+part of my life.
 
-## What's in it
+What you're looking at is that dashboard, running on **synthetic sample
+data**. The real trips stay in that Drive folder; this repo ships a seeded,
+reproducible 44-trip set (fake towns, no header row, real Automatic Pro
+schema) so the same code you read here is the code that runs against the
+real thing.
 
-- `app.py` — Flask app. Parses the xlsx, decodes the route polylines, serves JSON.
-- `templates/index.html` + `static/app.js` — the dashboard: map, KPIs, charts, table.
-- `static/style.css` — the dark UI.
-- `make_sample_data.py` — regenerates the 44-trip sample dataset (seeded, reproducible).
-- `geocode.py` — standalone one-off that builds `places_cache.json` from an API.
-- `Automatic Pro Trips*.xlsx` — the data. **Everything committed here is synthetic**
-  (44 trips, fake towns, seeded with 2026). Your real exports are yours to add; see
-  below.
+## What it shows
 
-## Run it
+- A Leaflet map of every trip as a polyline — colored by MPG, cluster
+  markers, click-through to a single trip you can zoom into.
+- KPI cards for the filtered set: distance, MPG, fuel, cost, hard-event
+  counts.
+- Three Chart.js bar charts: destination category, miles by month, MPG
+  distribution.
+- A detail panel (one trip at a time) with the destination as a live Google
+  Maps link.
+- Filters: date range, destination category, destination search.
 
-```bash
-cd automaticVisualizer
-pip install -r requirements.txt
-flask --app app:app run
-# → http://127.0.0.1:5000
-```
+![Dashboard — map of every trip, colored by MPG](media/media_overview.png)
 
-There is no database and no build step. The xlsx files are the data store; the app
-reads them at import.
+![One selected trip — the route fills the frame, detail panel on the right](media/media_zoomed.png)
 
-**Using your own data:** the app looks for exactly two filenames —
-`Automatic Pro Trips.xlsx` and `Automatic Pro Trips (1).xlsx` — in the working
-directory. That's a `DATA_FILES` list at the top of `app.py` if you'd rather change
-it, but I'll be honest: the app is built around the export as Automatic Pro names it,
-and "renaming" is not a supported configuration, it's a code edit. Drop a renamed
-export in there and nothing loads, silently.
+Two things about the Automatic Pro export were worth the trouble, and the
+code is mostly what deals with them:
 
-**Places cache:** `places_cache.json` maps a coordinate (`"lat,lng"` rounded to
-5 decimal places) to `{"label": ..., "category": ...}`. The dashboard falls back
-to "Unknown" for anything missing, so the file is optional — but without it the
-category bar chart goes flat and the destination filters lose their names. Regenerate it with
-`geocode.py` (needs a Geoapify key, set `GEOAPIFY_KEY` in a `.env`; there's a
-`.env.example`), or hand-write a small one for a demo.
+1. **No header row.** The sheet is 20 raw columns; the order *is* the format.
+2. **The route hides in a Google Maps URL.** Each trip's `map_url` carries
+   the route as an *encoded* polyline (`path=enc:...`) that the app regexes
+   out and decodes; anything over 100 points gets decimated so the map
+   stays light.
 
-## The xlsx format
-
-No header row. 20 columns, 0-indexed:
+### The 20 columns (0-indexed)
 
 | # | column | notes |
 |---|--------|-------|
 | 0 | vehicle | |
 | 1 | started_at | text, e.g. `July 28, 2017 at 01:52PM` |
-| 2 | ended_at | same format; may equal started_at |
+| 2 | ended_at | same format; may equal `started_at` |
 | 3 | distance | miles |
 | 4 | duration | fraction of a day **or** `HH:MM` — both appear in real exports, the app handles both |
 | 5 | mpg | |
@@ -66,7 +59,7 @@ No header row. 20 columns, 0-indexed:
 | 10 | over_70 | count |
 | 11 | over_75 | count |
 | 12 | over_80 | count |
-| 13 | map_url | Google Maps URL; contains `path=enc:....` for the route |
+| 13 | map_url | Google Maps URL; contains `path=enc:...` for the route |
 | 14 | start_lng | |
 | 15 | start_lat | |
 | 16 | start_link | |
@@ -74,9 +67,26 @@ No header row. 20 columns, 0-indexed:
 | 18 | end_lat | |
 | 19 | end_link | |
 
-The polyline in column 13 is standard Google encoded-polyline format, pulled from
-the URL with a regex and decoded in `app.py`; anything over 100 points gets
-decimated so the map stays light.
+## Run it
+
+```bash
+cd automaticVisualizer
+pip install -r requirements.txt
+flask --app app:app run
+# → http://127.0.0.1:5000
+```
+
+No database, no build step — the `.xlsx` files *are* the data store. The app
+looks for exactly two filenames, `Automatic Pro Trips.xlsx` and
+`Automatic Pro Trips (1).xlsx`, in the working directory (the `DATA_FILES`
+list at the top of `app.py`). Honest footnote: it's built around the names
+Automatic Pro gives its exports, and "renaming" is a code edit, not a config
+option. A renamed export sitting there just silently won't load.
+
+`places_cache.json` maps a coordinate to `{label, category}`. It's optional —
+the dashboard falls back to "Unknown" — but without it the category chart
+goes flat and the destination filters lose their names. Regenerate it with
+`geocode.py` (needs a Geoapify key in `.env`; there's a `.env.example`).
 
 ## API
 
@@ -86,28 +96,25 @@ decimated so the map stays light.
 | `GET /api/trips` | JSON array, one object per trip |
 | `GET /api/meta` | totals for the header |
 
-`/api/meta` on the sample set:
+`/api/trips` elements carry `start`/`end` (ISO), `dist`, `dur_min`, `mpg`,
+`cost`, `fuel`, the hard-event counters, start/end coordinates, `end_link`
+(a Google Maps view, surfaced in the detail panel), and `route` — a
+`[[lat, lng], …]` list ready to throw at Leaflet.
 
-```json
-{"count": 44, "first": "2018-01-03T16:09:00", "last": "2018-12-28T20:39:00",
- "total_dist": 73.6, "total_fuel": 4.5, "total_cost": 14.6}
-```
+## Files
 
-`/api/trips` elements carry `start`/`end` (ISO), `dist`, `dur_min`, `mpg`, `cost`,
-`fuel`, the hard-event counters, start/end coordinates, `end_link` (a Google Maps
-view, surfaced in the detail panel), and `route` — a `[[lat, lng], ...]` list ready
-to throw at Leaflet.
+- `app.py` — Flask: parses the xlsx, decodes the polylines, serves JSON.
+- `templates/index.html` + `static/app.js` + `static/style.css` — the
+  dashboard. Leaflet 1.9.4 + MarkerCluster 1.5.3 + Chart.js 4.4.1, all CDN,
+  no bundler.
+- `make_sample_data.py` — regenerates the 44-trip synthetic set from seed
+  `2026`.
+- `geocode.py` — standalone one-off that (re)builds the places cache via
+  Geoapify.
 
-## Frontend
-
-Leaflet 1.9.4 + MarkerCluster 1.5.3, Chart.js 4.4.1, all from CDN — no bundler. Tiles
-are stock OpenStreetMap, inverted with a CSS filter because the theme is dark and
-I don't like buying API keys for a personal dashboard.
-
-One honest footnote: the first version used CARTO dark tiles and it now quietly
-401s without a key. The OSM invert is the fix that sticks.
-
----
-
-Sample data: 44 synthetic trips, 2018-01-03 → 2018-12-28, generated by
-`make_sample_data.py`. No real trips or coordinates are in this repo.
+Two footnotes. Tiles are stock OpenStreetMap with a CSS invert filter — my
+first pass used CARTO dark tiles, which now quietly 401 without a paid key,
+and I didn't want to buy API keys for a dashboard about a car I no longer
+drive, so the invert is the fix that stuck. And the sample data is exactly
+44 trips, 2018-01-03 → 2018-12-28; nothing in this repo is a real trip from a
+real car.
