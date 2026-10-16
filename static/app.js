@@ -316,7 +316,6 @@
     meta = metaData || meta;
 
     map = L.map("map", { preferCanvas: true });
-    window.__map = map; // console/debug handle
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors", maxZoom: 19,
       className: "osm-dark",
