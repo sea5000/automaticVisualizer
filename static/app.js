@@ -97,12 +97,12 @@
     if (showRoutes) {
       filtered.forEach((t) => {
         if (!t.route || t.route.length < 2) return;
-        const pts = t.route.map((p) => [p[1], p[0]]);
-        // Casing under the colored line: without it, a 3px route is
-        // invisible on the inverted dark tiles at map-fit zoom.
-        L.polyline(pts, { color: "#d8dde3", weight: 6, opacity: 0.55 }).addTo(routeLayer);
+        const pts = t.route.map((p) => [p[0], p[1]]);
+        // Casing under the colored line: without it, routes vanish on the
+        // inverted dark tiles (and at WhatsApp thumbnail size).
+        L.polyline(pts, { color: "#f2f0e9", weight: 10, opacity: 0.45 }).addTo(routeLayer);
         L.polyline(pts, {
-          color: mpgColor(t.mpg, lo, hi), weight: 3, opacity: 0.95,
+          color: mpgColor(t.mpg, lo, hi), weight: 5, opacity: 1,
         }).addTo(routeLayer)
           .bindTooltip(t.dest_label, { className: "sel-tip", direction: "top", sticky: true })
           .on("click", () => selectTrip(tripId(t), false));
@@ -120,11 +120,18 @@
       m.on("click", () => selectTrip(tripId(t), false));
       cluster.addLayer(m);
     });
-    const withLoc = filtered.filter((t) => t.end_lat);
-    if (withLoc.length) {
-      const pts = withLoc.map((t) => [t.end_lat, t.end_lng]);
-      const b = L.featureGroup(pts.map((p) => L.marker(p))).getBounds().pad(0.25);
-      map.fitBounds(b);
+    // Fit the map to the trip ROUTES, not the end markers. End points
+    // cluster into ~3 places, so endpoint-bounds fit zoomed out onto the
+    // wrong centre; the route extents are where the data actually lives.
+    const routePts = [];
+    filtered.forEach((t) => {
+      (t.route || []).forEach((p) => routePts.push(p));
+      if (!t.route && t.end_lat) routePts.push([t.end_lat, t.end_lng]);
+    });
+    if (routePts.length) {
+      map.fitBounds(
+        L.featureGroup(routePts.map((p) => L.marker(p))).getBounds().pad(0.15),
+      );
     }
   }
 
@@ -309,6 +316,7 @@
     meta = metaData || meta;
 
     map = L.map("map", { preferCanvas: true });
+    window.__map = map; // console/debug handle
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors", maxZoom: 19,
       className: "osm-dark",

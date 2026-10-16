@@ -32,7 +32,7 @@ real thing.
 
 ![Dashboard — map of every trip, colored by MPG](media/media_overview.png)
 
-![One selected trip — the route fills the frame, detail panel on the right](media/media_zoomed.png)
+![One selected trip — the route fills the frame, detail panel on the right](media/media_trip.png)
 
 Two things about the Automatic Pro export were worth the trouble, and the
 code is mostly what deals with them:
