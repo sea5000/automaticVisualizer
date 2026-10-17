@@ -3,7 +3,7 @@
 __pycache__/
 *.pyc
 
-# Local secrets — never committed
+# Local secrets; never committed
 .env
 
 # Raw geocoder response cache (regenerable via geocode.py)

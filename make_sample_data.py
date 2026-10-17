@@ -47,7 +47,7 @@ def enc_polyline(coords):
     return "".join(out)
 
 
-# ---------- Fictional geography (Ashbrook — a town that does not exist) ----------
+# ---------- Fictional geography (Ashbrook, a town that does not exist) ----------
 
 HOME = (39.12104, -105.64633)
 HOME_LABEL = "Maple & 9th \u00b7 Ashbrook"

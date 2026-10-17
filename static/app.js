@@ -1,4 +1,4 @@
-/* Automatic Pro Trips — dashboard frontend.
+/* Automatic Pro Trips, dashboard frontend.
  * Consumes /api/trips and /api/meta. Route coordinates arrive pre-decoded
  * (server extracts them from the exporter's Google-encoded polylines).
  */
@@ -76,7 +76,7 @@
     $("#kTripsSub").textContent = n ? "of " + meta.count + " total" : "";
     $("#kDist").textContent = dist.toFixed(1) + " mi";
     $("#kDistSub").textContent = n ? (dist / n).toFixed(1) + " mi avg per trip" : "";
-    $("#kMpg").textContent = avgMpg ? avgMpg.toFixed(1) : "–";
+    $("#kMpg").textContent = avgMpg ? avgMpg.toFixed(1) : "-";
     $("#kMpgSub").textContent = mpgs.length ? mpgs.length + " rated trips" : "no ratings";
     $("#kFuel").textContent = fuel.toFixed(1) + " gal";
     $("#kFuelSub").textContent = n ? (fuel / n).toFixed(1) + " gal avg" : "";
@@ -116,7 +116,7 @@
           className: "", iconSize: [16, 16],
         }),
       });
-      m.bindTooltip(t.dest_label + " — " + fmtDate(t.start), { className: "sel-tip", direction: "top" });
+      m.bindTooltip(t.dest_label + ", " + fmtDate(t.start), { className: "sel-tip", direction: "top" });
       m.on("click", () => selectTrip(tripId(t), false));
       cluster.addLayer(m);
     });
@@ -218,15 +218,15 @@
         plugins: { legend: { display: false },
           tooltip: {
             callbacks: {
-              title: () => (lo ? lo.toFixed(0) : 0) + "–" + (hi ? hi.toFixed(0) : 0) + " mpg range of filtered trips",
+              title: () => (lo ? lo.toFixed(0) : 0) + "-" + (hi ? hi.toFixed(0) : 0) + " mpg range of filtered trips",
             },
           } },
         scales: { x: { display: false }, y: { beginAtZero: true } } },
     });
 
-    $("#mpgMin").textContent = lo ? lo.toFixed(0) + " mpg" : "–";
-    $("#mpgMid").textContent = (lo && hi) ? ((lo + hi) / 2).toFixed(0) + " mpg" : "–";
-    $("#mpgMax").textContent = hi ? hi.toFixed(0) + " mpg" : "–";
+    $("#mpgMin").textContent = lo ? lo.toFixed(0) + " mpg" : "-";
+    $("#mpgMid").textContent = (lo && hi) ? ((lo + hi) / 2).toFixed(0) + " mpg" : "-";
+    $("#mpgMax").textContent = hi ? hi.toFixed(0) + " mpg" : "-";
   }
 
   /* ---------- table ---------- */
@@ -241,7 +241,7 @@
     $("#tripsBody").innerHTML = rows.map((t) => {
       const ovm = t.over_70
         ? '<span class="badge">' + t.over_70 + " / " + t.over_75 + " / " + t.over_80 + "</span>"
-        : '<span class="badge">–</span>';
+        : '<span class="badge">-</span>';
       return '<tr data-id="' + tripId(t) + '">' +
         "<td>" + fmtDate(t.start) + " " + fmtTime(t.start) + "</td>" +
         "<td>" + Math.round(t.dur_min) + " min</td>" +
@@ -301,10 +301,10 @@
 
     const f = new Date(first + "T12:00"), l = new Date(last + "T12:00");
     $("#sub").innerHTML = meta.count + " trips · " +
-      f.toLocaleDateString(undefined, { month: "short", year: "numeric" }) + " – " +
+      f.toLocaleDateString(undefined, { month: "short", year: "numeric" }) + " to " +
       l.toLocaleDateString(undefined, { month: "short", year: "numeric" }) +
       " · " + (meta.total_dist || 0).toFixed(0) + " mi · " + (meta.total_fuel || 0).toFixed(0) +
-      " gal &mdash; synthetic sample data";
+      " gal: synthetic sample data";
   }
 
   async function main() {
