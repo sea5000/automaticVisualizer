@@ -1,4 +1,4 @@
-# automaticVisualizer
+# Car Trip Data Visualizer
 
 Back in high school I had an Automatic Pro installed in my 2000 Ford Explorer,
 the family car my dad handed down, the one my family had been in as long
